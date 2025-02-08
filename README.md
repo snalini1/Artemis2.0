@@ -12,11 +12,19 @@ The app allows users to:
 ```shell
   cd Artemis
 ```
-2) Run the following code (if in XCODE):
+2) Run the following code:
+```shell
+  npm install -g expo-cli
+```
+3) Run the following code:
+```shell
+  npm install
+```
+4) Run the following code (if in XCODE):
 ```shell
   npm run ios
 ```
-2) Run the following code (if in Windows):
+4) Run the following code (if in Windows):
 ```shell
   npm run web
 ```

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import groq 
+import groq
+import requests  # Import requests for Unsplash API
 from pydantic import BaseModel
 
 # Initialize FastAPI
@@ -19,23 +20,45 @@ app.add_middleware(
 class CityRequest(BaseModel):
     city_name: str
 
-# Set GroqCloud API Key
+# API Keys
 GROQ_API_KEY = "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"
+UNSPLASH_API_KEY = "EkQesnFfriurvMS0ZmqZ3rHlGUAzwdQlCpuvsspPOJg"
+
+# Initialize Groq client
 groq_client = groq.Client(api_key=GROQ_API_KEY)
 
-@app.post("/api/get_city_data")
-async def get_city_data(request: CityRequest):  # Use Pydantic model
-    city_name = request.city_name  # Extract city name properly
-
+def get_unsplash_image(city_name):
+    """Fetch a city image from Unsplash API."""
     try:
-        # 🔹 Query LLaMA-3 on GroqCloud
+        url = "https://api.unsplash.com/search/photos"
+        params = {
+            "query": city_name,
+            "per_page": 1,  # Get only one image
+            "client_id": UNSPLASH_API_KEY,
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if "results" in data and len(data["results"]) > 0:
+            return data["results"][0]["urls"]["regular"]
+
+        return "No image available"
+
+    except Exception as e:
+        print(f"Error fetching city image: {e}")
+        return "Error fetching image"
+
+def get_groq_data(city_name):
+    """Fetch city details and safety score from GroqCloud LLaMA-3."""
+    try:
         response = groq_client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        "You are a travel guide AI, geography and safety expert. Be friendly and warm. "
+                        "You are a travel guide AI, geography and safety expert. Be friendly and warm. Be harsh about the safety score, don't sugarcoat it. Don't be biased. Women's lives and safety depend on it. "
                         "Always return the response in this exact format:\n\n"
                         "Description: <text>\n"
                         "Safety Score: <number>\n"
@@ -44,7 +67,7 @@ async def get_city_data(request: CityRequest):  # Use Pydantic model
                 },
                 {
                     "role": "user",
-                    "content": f"Describe {city_name} and provide a safety score for travelers (1-10). Also, provide a safety description.",
+                    "content": f"Describe {city_name} for travelers and provide a safety score (1-10). Also, provide a safety description.",
                 },
             ],
             max_tokens=300,
@@ -74,6 +97,22 @@ async def get_city_data(request: CityRequest):  # Use Pydantic model
             "description": description,
             "safety_description": safety_description,
         }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/get_city_data")
+async def get_city_data(request: CityRequest):
+    """API Endpoint: Fetch both city data (Groq) and image (Unsplash)."""
+    city_name = request.city_name  # Extract city name properly
+
+    try:
+        # Fetch data from both APIs
+        groq_data = get_groq_data(city_name)
+        city_image_url = get_unsplash_image(city_name)
+
+        # Combine results
+        return {**groq_data, "image_url": city_image_url}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

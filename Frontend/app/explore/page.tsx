@@ -14,13 +14,21 @@ type Destination = {
 
 export default function ExplorePage() {
   const [destinations] = useState<Destination[]>([
-    { id: "1", name: "Paris", image: "/placeholder.svg?height=100&width=150" },
-    { id: "2", name: "Tokyo", image: "/placeholder.svg?height=100&width=150" },
-    { id: "3", name: "New York", image: "/placeholder.svg?height=100&width=150" },
-    { id: "4", name: "Rome", image: "/placeholder.svg?height=100&width=150" },
-    { id: "5", name: "Sydney", image: "/placeholder.svg?height=100&width=150" },
-    { id: "6", name: "Barcelona", image: "/placeholder.svg?height=100&width=150" },
-  ])
+    { id: "1", name: "Paris", image: "/images/paris.png" }, 
+    { id: "2", name: "Tokyo", image: "/images/tokyo.png" },
+    { id: "3", name: "New York", image: "/images/nyc.png" },
+    { id: "4", name: "Mumbai", image: "/images/mumbai.png" },
+    { id: "5", name: "Sydney", image: "/images/sydney.png" },
+    { id: "6", name: "Rome", image: "/images/rome.png" },
+    { id: "7", name: "Bogota", image: "/images/bogota.png" },
+    { id: "8", name: "Cairo", image: "/images/cairo.png" },
+    { id: "9", name: "Bangalore", image: "/images/bangalore.png" },
+    { id: "10", name: "Istanbul", image: "/images/istanbul.png" },
+    { id: "11", name: "Bangkok", image: "/images/bangkok.png" },
+    { id: "12", name: "Mexico City", image: "/images/mexicocity.png" },
+    { id: "13", name: "Moscow", image: "/images/moscow.png" },
+    { id: "14", name: "Tijuana", image: "/images/tijuana.png" },
+  ]);
 
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -42,7 +50,7 @@ export default function ExplorePage() {
       <h2 className="text-xl font-semibold text-purple-400 mt-6">Popular Destinations</h2>
       <div className="grid grid-cols-2 gap-4">
         {filteredDestinations.map((destination) => (
-          <Link key={destination.id} href={`/city/${destination.id}`}>
+          <Link key={destination.id} href={`/city/${encodeURIComponent(destination.name)}`}>
             <Card className="bg-gray-800 overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <CardContent className="p-0">
                 <img
@@ -61,4 +69,3 @@ export default function ExplorePage() {
     </div>
   )
 }
-

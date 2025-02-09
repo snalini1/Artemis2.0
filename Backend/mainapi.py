@@ -1,21 +1,24 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles  # Add this import
 from pydantic import BaseModel
-from typing import List, Optional
-from uuid import uuid4
-import shutil
-import os
+from geopy.geocoders import Nominatim
+import pandas as pd
+import requests
+import groq  # Ensure the Groq client is correctly imported
+import uvicorn
 
+# Initialize FastAPI app
 app = FastAPI()
 
+# Add middleware for CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],  # Replace "*" with specific frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 ### ------------------ CITY DATA (City Safety & Image API) ------------------ ###
 
 # API Keys
@@ -25,11 +28,13 @@ UNSPLASH_API_KEY = "EkQesnFfriurvMS0ZmqZ3rHlGUAzwdQlCpuvsspPOJg"
 # Initialize Groq client
 groq_client = groq.Client(api_key=GROQ_API_KEY)
 
+
 class CityRequest(BaseModel):
     city_name: str
 
-def get_unsplash_image(city_name):
-    """Fetch a city image from Unsplash API."""
+
+def get_unsplash_image(city_name: str) -> str:
+    """Fetch a city image from the Unsplash API."""
     try:
         url = "https://api.unsplash.com/search/photos"
         params = {"query": city_name, "per_page": 1, "client_id": UNSPLASH_API_KEY}
@@ -39,10 +44,11 @@ def get_unsplash_image(city_name):
         if "results" in data and len(data["results"]) > 0:
             return data["results"][0]["urls"]["regular"]
         return "No image available"
-    except Exception as e:
+    except Exception:
         return "Error fetching image"
 
-def get_groq_data(city_name):
+
+def get_groq_data(city_name: str) -> dict:
     """Fetch city details and safety score from GroqCloud LLaMA-3."""
     try:
         response = groq_client.chat.completions.create(
@@ -68,15 +74,12 @@ def get_groq_data(city_name):
         )
 
         ai_text = response.choices[0].message.content.strip()
-
-        # Default values
         description = "Unknown"
         safety_score = "No safety score provided"
         safety_description = "No safety description provided"
 
-        # Ensure the response contains all required sections
         if "Description:" in ai_text and "Safety Score:" in ai_text and "Safety Description:" in ai_text:
-            parts = ai_text.split("\n")  # Split by new line to ensure structure
+            parts = ai_text.split("\n")
             for part in parts:
                 if part.startswith("Description:"):
                     description = part.replace("Description:", "").strip()
@@ -91,7 +94,6 @@ def get_groq_data(city_name):
             "description": description,
             "safety_description": safety_description,
         }
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -107,6 +109,7 @@ async def get_city_data(request: CityRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 ### ------------------ SAFETY DATA (Emergency Numbers API) ------------------ ###
 
 # Load emergency numbers dataset
@@ -118,14 +121,16 @@ EMERGENCY_NUMBERS = {
     row["country"]: {
         "Police": row["ByCountry_police"],
         "Ambulance": row["ByCountry_ambulance"],
-        "Fire": row["ByCountry_fire"]
+        "Fire": row["ByCountry_fire"],
     }
     for _, row in df.iterrows()
 }
 
+
 class LocationRequest(BaseModel):
     latitude: float
     longitude: float
+
 
 @app.post("/api/get_emergency_numbers")
 async def get_emergency_numbers(request: LocationRequest):
@@ -146,8 +151,8 @@ async def get_emergency_numbers(request: LocationRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 ### ------------------------------------------------------------------------- ###
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

@@ -59,25 +59,47 @@ export default function EditProfileForm({ userId, onProfileUpdated }: EditProfil
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData();
-
+  
     Object.keys(formData).forEach((key) => {
-      if (formData[key as keyof FormDataType] !== null) {
-        data.append(key, formData[key as keyof FormDataType] as string | Blob);
+      if (key === "profilePicture" && formData.profilePicture) {
+        data.append("profilePicture", formData.profilePicture);
+      } else if (formData[key as keyof FormDataType]) {
+        let value = formData[key as keyof FormDataType];
+        if (["age", "trips", "countries"].includes(key)) {
+          value = String(Number(value));  // ✅ Convert to stringified number
+        }
+        data.append(key, value as string);
       }
     });
-
-    const response = await fetch(`http://localhost:8000/api/user/${userId}`, {
-      method: 'POST',
-      body: data,
-    });
-
-    if (response.ok) {
+  
+    console.log("Form Data Sent:", [...data]);
+  
+    const apiUrl = `http://localhost:8000/api/user/${userId}`;
+    console.log("API Request URL:", apiUrl);
+    console.log("Form Data:", [...data]);
+  
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",  // ✅ Change this from PUT to POST
+        body: data,
+      });
+  
+      console.log("Response Status:", response.status);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error updating profile:", errorText);
+        return;
+      }
+  
       const updatedProfile = await response.json();
+      console.log("Profile updated:", updatedProfile);
       onProfileUpdated(updatedProfile);
-    } else {
-      console.error('Error updating profile');
+    } catch (error) {
+      console.error("Network error:", error);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-4 rounded-lg">

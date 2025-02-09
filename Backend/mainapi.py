@@ -16,108 +16,138 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+### ------------------ CITY DATA (City Safety & Image API) ------------------ ###
 
-# Directory for uploaded images
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# API Keys
+GROQ_API_KEY = "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"
+UNSPLASH_API_KEY = "EkQesnFfriurvMS0ZmqZ3rHlGUAzwdQlCpuvsspPOJg"
 
-# Serve uploaded files
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+# Initialize Groq client
+groq_client = groq.Client(api_key=GROQ_API_KEY)
 
-# Data Models
-class BucketListItem(BaseModel):
-    name: str
-    lat: float
-    lng: float
+class CityRequest(BaseModel):
+    city_name: str
 
-class UserProfile(BaseModel):
-    id: str
-    profilePicture: Optional[str] = None
-    name: str
-    bio: str
-    age: int
-    height: str
-    weight: str
-    trips: int
-    countries: int
-    bucketList: List[BucketListItem] = []
+def get_unsplash_image(city_name):
+    """Fetch a city image from Unsplash API."""
+    try:
+        url = "https://api.unsplash.com/search/photos"
+        params = {"query": city_name, "per_page": 1, "client_id": UNSPLASH_API_KEY}
+        response = requests.get(url, params=params)
+        data = response.json()
 
-# In-memory storage
-users = {}
+        if "results" in data and len(data["results"]) > 0:
+            return data["results"][0]["urls"]["regular"]
+        return "No image available"
+    except Exception as e:
+        return "Error fetching image"
 
-# Initialize a test user AFTER defining the UserProfile class
-users["user123"] = UserProfile(
-    id="user123",
-    name="Test User",
-    bio="This is a test user.",
-    age=25,
-    height="5'8\"",
-    weight="150lbs",
-    trips=5,
-    countries=3,
-    bucketList=[]
-)
+def get_groq_data(city_name):
+    """Fetch city details and safety score from GroqCloud LLaMA-3."""
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a travel guide AI, geography and safety expert. Be friendly and warm. "
+                        "Be harsh about the safety score, don't sugarcoat it. Don't be biased. Women's lives and safety depend on it. "
+                        "Always return the response in this exact format:\n\n"
+                        "Description: <text>\n"
+                        "Safety Score: <number>\n"
+                        "Safety Description: <text>"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"Describe {city_name} for travelers and provide a safety score (1-10). Also, provide a safety description.",
+                },
+            ],
+            max_tokens=300,
+        )
 
-# Get user profile
-@app.get("/api/user/{user_id}", response_model=UserProfile)
-def get_user(user_id: str):
-    user = users.get(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+        ai_text = response.choices[0].message.content.strip()
 
-# Create or update user profile
-@app.post("/api/user/{user_id}", response_model=UserProfile)
-def update_user(
-    user_id: str,
-    profilePicture: Optional[UploadFile] = File(None),
-    name: str = Form(...),
-    bio: str = Form(...),
-    age: int = Form(...),
-    height: str = Form(...),
-    weight: str = Form(...),
-    trips: int = Form(...),
-    countries: int = Form(...)
-):
-    profile_pic_path = None
-    if profilePicture:
-        file_location = f"{UPLOAD_DIR}/{uuid4()}_{profilePicture.filename}"
-        with open(file_location, "wb") as buffer:
-            shutil.copyfileobj(profilePicture.file, buffer)
-        profile_pic_path = file_location
+        # Default values
+        description = "Unknown"
+        safety_score = "No safety score provided"
+        safety_description = "No safety description provided"
 
-    user = users.get(user_id, UserProfile(id=user_id, name=name, bio=bio, age=age, height=height, weight=weight, trips=trips, countries=countries))
-    user.name = name
-    user.bio = bio
-    user.age = age
-    user.height = height
-    user.weight = weight
-    user.trips = trips
-    user.countries = countries
-    if profile_pic_path:
-        user.profilePicture = profile_pic_path
+        # Ensure the response contains all required sections
+        if "Description:" in ai_text and "Safety Score:" in ai_text and "Safety Description:" in ai_text:
+            parts = ai_text.split("\n")  # Split by new line to ensure structure
+            for part in parts:
+                if part.startswith("Description:"):
+                    description = part.replace("Description:", "").strip()
+                elif part.startswith("Safety Score:"):
+                    safety_score = part.replace("Safety Score:", "").strip()
+                elif part.startswith("Safety Description:"):
+                    safety_description = part.replace("Safety Description:", "").strip()
 
-    users[user_id] = user
-    return user
+        return {
+            "city_name": city_name,
+            "safety_score": safety_score,
+            "description": description,
+            "safety_description": safety_description,
+        }
 
-# Add to bucket list
-@app.post("/api/user/{user_id}/bucket-list", response_model=UserProfile)
-def add_to_bucket_list(user_id: str, item: BucketListItem):
-    user = users.get(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user.bucketList.append(item)
-    return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-# Remove from bucket list
-@app.delete("/api/user/{user_id}/bucket-list/{item_id}", response_model=UserProfile)
-def remove_from_bucket_list(user_id: str, item_id: str):
-    user = users.get(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user.bucketList = [item for item in user.bucketList if item.name != item_id]
-    return user
+
+@app.post("/api/get_city_data")
+async def get_city_data(request: CityRequest):
+    """API Endpoint: Fetch both city data and image."""
+    city_name = request.city_name
+    try:
+        city_data = get_groq_data(city_name)
+        city_image_url = get_unsplash_image(city_name)
+        return {**city_data, "image_url": city_image_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+### ------------------ SAFETY DATA (Emergency Numbers API) ------------------ ###
+
+# Load emergency numbers dataset
+file_path = "data/emergencynumbers.csv"
+df = pd.read_csv(file_path)
+
+# Convert to dictionary for lookup
+EMERGENCY_NUMBERS = {
+    row["country"]: {
+        "Police": row["ByCountry_police"],
+        "Ambulance": row["ByCountry_ambulance"],
+        "Fire": row["ByCountry_fire"]
+    }
+    for _, row in df.iterrows()
+}
+
+class LocationRequest(BaseModel):
+    latitude: float
+    longitude: float
+
+@app.post("/api/get_emergency_numbers")
+async def get_emergency_numbers(request: LocationRequest):
+    """Fetch emergency numbers based on user's location."""
+    try:
+        geolocator = Nominatim(user_agent="safety-app")
+        location = geolocator.reverse((request.latitude, request.longitude), language="en")
+
+        if not location or "country" not in location.raw["address"]:
+            raise HTTPException(status_code=400, detail="Could not determine country")
+
+        country = location.raw["address"]["country"]
+        emergency_numbers = EMERGENCY_NUMBERS.get(
+            country, {"Police": "Unknown", "Ambulance": "Unknown", "Fire": "Unknown"}
+        )
+
+        return {"country": country, "emergency_numbers": emergency_numbers}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+### ------------------------------------------------------------------------- ###
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

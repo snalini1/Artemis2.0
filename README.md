@@ -8,5 +8,20 @@ The app allows users to:
 
 # SETUP:
 
-Run the following code in the terminal:
-python run_all.py
+1. Run The Backend
+
+    Navigate to the Backend folder
+
+        cd Backend 
+
+   Use these commands
+
+        python index.py
+        python main.py
+
+2. Run The Frontend
+
+   Navigate to the Backend folder
+
+        cd Frontend
+        npm run dev

@@ -70,12 +70,12 @@ const TravelPlanner: React.FC = () => {
                 </div>
             )}
 
-            {result && (
-                <div className="mt-4 p-4 border rounded bg-white text-black shadow-md">
-                    <h2 className="text-lg font-semibold mb-2">Generated Itinerary:</h2>
-                    <p>{result}</p>
-                </div>
-            )}
+          {result && (
+              <div className="mt-4 p-4 border rounded bg-white text-black shadow-md">
+                  <h2 className="text-lg font-semibold mb-2">Generated Itinerary:</h2>
+                  <p>{result}</p>
+              </div>
+          )}
 
         </div>
     );

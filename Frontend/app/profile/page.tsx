@@ -49,7 +49,7 @@ export default function ProfilePage() {
 
   return (
     <div 
-      className="max-w-md mx-auto h-[844px] flex flex-col items-center p-4 space-y-6 pt-20 relative"
+      className="max-w-md mx-auto h-[844px] flex flex-col items-center space-y-6 pt-20 relative"
       style={{
         backgroundColor: "#5B76C8",
         backgroundSize: "cover",

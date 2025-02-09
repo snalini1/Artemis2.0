@@ -1,10 +1,18 @@
 import subprocess
 import os
+import time
+from dotenv import load_dotenv  # Load environment variables
+
+# Load environment variables from .env file
+dotenv_path = os.path.join("Backend", ".env")
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+    print("✅ Loaded environment variables from .env")
 
 # Paths to your project components
 FRONTEND_DIR = "./Frontend"
 BACKEND_DIR = "./Backend"
-INDEX_SCRIPT = "./Backend/Functions/index.py"
+INDEX_SCRIPT = "./Backend/index.py"
 
 # Start the processes
 def start_all():
@@ -13,16 +21,16 @@ def start_all():
         frontend_process = subprocess.Popen(
             ["npm", "run", "dev"], cwd=FRONTEND_DIR, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        print("Frontend started at http://localhost:3000")
+        print("🚀 Frontend started at http://localhost:3000")
 
-        # Start the Backend (FastAPI)
+        # Start the Backend (FastAPI - Combined)
         backend_process = subprocess.Popen(
-            ["uvicorn", "safetydata:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
             cwd=BACKEND_DIR,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        print("Backend started at http://localhost:8000")
+        print("🛡️ Backend (City & Safety Data) API started at http://localhost:8000")
 
         # Start the Flask `index.py`
         flask_process = subprocess.Popen(
@@ -30,7 +38,7 @@ def start_all():
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        print("Flask app started at http://localhost:5000")
+        print("🤖 Chatbot Flask API started at http://localhost:5000")
 
         # Wait for processes to finish
         frontend_process.wait()
@@ -38,7 +46,7 @@ def start_all():
         flask_process.wait()
 
     except KeyboardInterrupt:
-        print("Shutting down all services...")
+        print("🛑 Shutting down all services...")
 
         # Kill all processes when interrupted
         frontend_process.terminate()

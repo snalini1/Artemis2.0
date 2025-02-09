@@ -6,11 +6,14 @@ from flask_cors import CORS
 import json
 
 # Load environment variables
-load_dotenv("secret_key.env")
+load_dotenv()
 
-client = Groq(
-    api_key=os.environ["GROQ_API_KEY"],
-)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # ✅ Fetch safely
+
+if not GROQ_API_KEY:
+    raise ValueError("GROQ_API_KEY is not set. Please check your .env file.")
+
+client = Groq(api_key=GROQ_API_KEY)
 
 app = Flask(__name__)
 CORS(app)

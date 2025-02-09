@@ -1,6 +1,6 @@
 export const fetchItinerary = async (start: string, end: string, stops: string[]) => {
     try {
-        const response = await fetch("http://127.0.0.1:5000/plan_itinerary", {
+        const response = await fetch("http://127.0.0.1:5000/plan_itinerary", {  // ✅ Flask backend
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ start_location: start, end_location: end, stops }),
@@ -11,7 +11,7 @@ export const fetchItinerary = async (start: string, end: string, stops: string[]
         }
 
         const data = await response.json();
-        return data.response;  // Return response content
+        return data.response;  // ✅ Return response content
     } catch (error) {
         console.error("Error fetching itinerary:", error);
         return "Failed to fetch itinerary.";

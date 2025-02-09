@@ -25,7 +25,7 @@ def start_all():
 
         # Start the Backend (FastAPI - Combined)
         backend_process = subprocess.Popen(
-            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+            ["uvicorn", "mainapi:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
             cwd=BACKEND_DIR,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

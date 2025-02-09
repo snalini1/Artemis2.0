@@ -55,7 +55,7 @@ export default function CityPage() {
   if (!cityData) return <p className="text-red-400 p-6">City not found.</p>;
 
   return (
-    <div className="h-full bg-gray-900">
+    <div className="h-full bg-gray-1000">
       {/* Image Section */}
       <div className="relative h-[300px]">
         <img
@@ -72,9 +72,9 @@ export default function CityPage() {
       </div>
 
       {/* City Info */}
-      <div className="px-4 py-6 space-y-6">
-        <h1 className="text-3xl font-bold text-purple-400">{cityData.city_name}</h1>
-        <h2 className="text-lg text-[#859dc7]">Safety Score: {cityData.safety_score}</h2>
+      <div className="px-4 py-6 space-y-6 text-center">
+        <h1 className="text-3xl font-bold text-white-400">{cityData.city_name}</h1>
+        <h2 className="text-lg text-white-400">Safety Score: {cityData.safety_score}</h2>
 
         {/* City Description */}
         <Card className="bg-[#859dc7] border-0">
@@ -84,7 +84,7 @@ export default function CityPage() {
         </Card>
 
         {/* Safety Information */}
-        <h2 className="text-lg text-purple-400 mt-4">Safety Information:</h2>
+        <h2 className="text-lg text-white-400 mt-4">Safety Information:</h2>
         <Card className="bg-gray-800 border-0">
           <CardContent className="p-6">
             <p className="text-white leading-relaxed">{cityData.safety_description}</p>

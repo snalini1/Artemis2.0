@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import groq
-import requests  # Import requests for Unsplash API
+import requests
 from pydantic import BaseModel
 
 # Initialize FastAPI
@@ -10,13 +10,13 @@ app = FastAPI()
 # Enable CORS for frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to frontend domain in production
+    allow_origins=["http://localhost:3000"],  # Update with frontend domain in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Define the request model
+# Define request model
 class CityRequest(BaseModel):
     city_name: str
 
@@ -28,26 +28,27 @@ UNSPLASH_API_KEY = "EkQesnFfriurvMS0ZmqZ3rHlGUAzwdQlCpuvsspPOJg"
 groq_client = groq.Client(api_key=GROQ_API_KEY)
 
 def get_unsplash_image(city_name):
-    """Fetch a city image from Unsplash API."""
+    """Fetch a city image from Unsplash API with error handling."""
     try:
         url = "https://api.unsplash.com/search/photos"
         params = {
             "query": city_name,
-            "per_page": 1,  # Get only one image
+            "per_page": 1,
             "client_id": UNSPLASH_API_KEY,
         }
-
         response = requests.get(url, params=params)
+        response.raise_for_status()  # Raise error for bad responses (4xx, 5xx)
+        
         data = response.json()
-
-        if "results" in data and len(data["results"]) > 0:
+        print("Unsplash API Response:", data)  # Debugging Log
+        
+        if "results" in data and data["results"]:
             return data["results"][0]["urls"]["regular"]
+        return "https://via.placeholder.com/600x400?text=No+Image+Available"
 
-        return "No image available"
-
-    except Exception as e:
-        print(f"Error fetching city image: {e}")
-        return "Error fetching image"
+    except requests.RequestException as e:
+        print(f"Error fetching Unsplash image: {e}")
+        return "https://via.placeholder.com/600x400?text=Error+Fetching+Image"
 
 def get_groq_data(city_name):
     """Fetch city details and safety score from GroqCloud LLaMA-3."""
@@ -58,8 +59,8 @@ def get_groq_data(city_name):
                 {
                     "role": "system",
                     "content": (
-                        "You are a travel guide AI, geography and safety expert. Be friendly and warm. Be harsh about the safety score, don't sugarcoat it. Don't be biased. Women's lives and safety depend on it. "
-                        "Always return the response in this exact format:\n\n"
+                        "You are a travel guide AI, geography and safety expert. Be detailed and unbiased."
+                        "Provide the response in this exact format:\n\n"
                         "Description: <text>\n"
                         "Safety Score: <number>\n"
                         "Safety Description: <text>"
@@ -74,15 +75,16 @@ def get_groq_data(city_name):
         )
 
         ai_text = response.choices[0].message.content.strip()
+        print("Groq API Response:", ai_text)  # Debugging Log
 
-        # Default values
+        # Default values in case of parsing failure
         description = "Unknown"
         safety_score = "No safety score provided"
         safety_description = "No safety description provided"
 
         # Ensure the response contains all required sections
         if "Description:" in ai_text and "Safety Score:" in ai_text and "Safety Description:" in ai_text:
-            parts = ai_text.split("\n")  # Split by new line to ensure structure
+            parts = ai_text.split("\n")
             for part in parts:
                 if part.startswith("Description:"):
                     description = part.replace("Description:", "").strip()
@@ -99,20 +101,25 @@ def get_groq_data(city_name):
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error fetching Groq data: {e}")  # Debugging Log
+        raise HTTPException(status_code=500, detail="Error retrieving city data from Groq.")
 
 @app.post("/api/get_city_data")
 async def get_city_data(request: CityRequest):
     """API Endpoint: Fetch both city data (Groq) and image (Unsplash)."""
-    city_name = request.city_name  # Extract city name properly
+    city_name = request.city_name.strip()
+
+    if not city_name:
+        raise HTTPException(status_code=400, detail="City name is required.")
 
     try:
         # Fetch data from both APIs
         groq_data = get_groq_data(city_name)
         city_image_url = get_unsplash_image(city_name)
 
-        # Combine results
+        # Combine and return results
         return {**groq_data, "image_url": city_image_url}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error in get_city_data: {e}")  # Debugging Log
+        raise HTTPException(status_code=500, detail="Failed to retrieve city data.")

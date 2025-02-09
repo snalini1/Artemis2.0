@@ -1,0 +1,221 @@
+"country","ByCountry_police","ByCountry_ambulance","ByCountry_fire"
+"India",100,102,101
+"China",110,120,119
+"United States",911,911,911
+"Indonesia",112,112,112
+"Pakistan",15,1122,16
+"Nigeria",112,112,112
+"Brazil",190,192,193
+"Bangladesh",999,999,999
+"Russia",2,3,1
+"Ethiopia",991,907,939
+"Mexico",911,911,911
+"Japan",110,119,119
+"Egypt",122,123,180
+"Philippines",911,911,911
+"DR Congo","114; 118","None",113
+"Vietnam",113,115,114
+"Iran",110,115,125
+"Turkey",155,112,110
+"Germany",110,112,112
+"Thailand",191,"1669*",199
+"United Kingdom","999; 112","999; 112","999; 112"
+"Tanzania",112,"115; 199",114
+"France",17,15,18
+"South Africa",10111,10177,10177
+"Italy","113; 112","118; 112","115; 112"
+"Kenya","112; 999; 911","112; 999; 911","112; 999; 911"
+"Myanmar",999,999,999
+"Colombia",123,123,123
+"South Korea",112,119,119
+"Sudan",777,333,998
+"Uganda",112,911,112
+"Spain",112,112,112
+"Algeria","17; 112",14,14
+"Iraq",104,122,115
+"Argentina","101; 911",107,100
+"Afghanistan",100,102,101
+"Yemen",194,191,191
+"Canada",911,911,911
+"Poland",986,999,998
+"Morocco","19; 177; 112 (from mobiles)",15,15
+"Angola",113,116,115
+"Ukraine",102,103,101
+"Uzbekistan","102, 112","101, 112","103, 112"
+"Malaysia",999,999,999
+"Mozambique",119,117,198
+"Ghana",191,193,192
+"Peru",105,"117; 106",116
+"Saudi Arabia",999,997,998
+"Madagascar",117,124,118
+"Ivory Coast","110; 111; 170",185,180
+"Nepal",100,102,101
+"Cameroon",112,112,112
+"Venezuela",171,171,171
+"Niger",16,15,118
+"Syria",112,110,113
+"Mali",17,15,18
+"Burkina Faso",16,135,112
+"Taiwan",110,119,119
+"Sri Lanka",119,110,110
+"Malawi","997; 990",998,999
+"Zambia",991,902,993
+"Kazakhstan","102; 112","103; 112","101; 112"
+"Chad",17,"2251-4242",18
+"Chile",133,131,132
+"Romania",112,112,112
+"Somalia",888,999,555
+"Senegal",123,1515,18
+"Guatemala","110; 120",128,123
+"Netherlands",112,112,112
+"Ecuador","101; 911","131; 911","102; 911"
+"Cambodia",117,119,118
+"Zimbabwe",999,999,999
+"Guinea",117,18,"442-020"
+"Benin",116,112,118
+"Rwanda",112,912,112
+"Burundi",111,117,118
+"Bolivia",110,160,119
+"Tunisia","197; 193",190,198
+"South Sudan","112, 777",333,555
+"Haiti","114; 122",116,115
+"Belgium","101; 112","100; 112","100; 112"
+"Jordan","911; 191",911,911
+"Dominican Republic",911,911,911
+"United Arab Emirates","999; 112","998; 112","997; 112"
+"Cuba",106,104,105
+"Honduras",199,199,198
+"Czech Republic",158,155,150
+"Sweden",112,112,112
+"Tajikistan",112,112,112
+"Papua New Guinea",112,111,110
+"Portugal",112,112,112
+"Azerbaijan","102; 112","103; 112","101; 112"
+"Greece","112; 100","112; 166","112; 199"
+"Hungary",107,104,105
+"Togo",112,111,118
+"Israel",100,101,102
+"Austria",133,144,122
+"Belarus",102,103,101
+"Switzerland",117,144,118
+"Sierra Leone",19,999,999
+"Laos",191,195,190
+"Turkmenistan",112,112,112
+"Hong Kong",999,999,999
+"Libya",193,191,190
+"Kyrgyzstan",102,103,101
+"Paraguay",911,911,911
+"Nicaragua",118,128,"115; 120"
+"Bulgaria",166,150,160
+"Serbia","92; 192","94; 194","93; 193"
+"El Salvador",911,911,"911; 913"
+"Republic of the Congo",117,"None",118
+"Denmark",112,112,112
+"Singapore",999,995,995
+"Lebanon","112; 160",140,175
+"Finland",112,112,112
+"Liberia",911,911,911
+"Norway",112,113,110
+"Slovakia","112; 158","112; 155","112; 150"
+"Central African Republic",117,1220,118
+"Oman","999; 112","999; 112","999; 112"
+"Ireland",112,112,112
+"New Zealand",111,111,111
+"Mauritania",116,101,118
+"Costa Rica","911; 112","911; 112","911; 112"
+"Kuwait",112,112,112
+"Panama",104,911,103
+"Croatia","92; 112","94; 112","93; 112"
+"Georgia","122; 112","113; 112","111; 112"
+"Eritrea",113,114,116
+"Mongolia",102,103,101
+"Uruguay",911,911,911
+"Puerto Rico",911,911,911
+"Bosnia and Herzegovina",122,124,123
+"Qatar","999; 112 (from mobiles)","999; 112 (from mobiles)","999; 112 (from mobiles)"
+"Moldova",902,903,901
+"Namibia",10111,"None","None"
+"Armenia",102,103,101
+"Lithuania","112; 02; (land line) 102 (mobile)","112 03; (land line) 103 (mobile)","112 01; (land line) 101 (mobile)"
+"Jamaica","112; 110; 911; 119",110,110
+"Albania",129,127,128
+"Gambia",117,116,118
+"Gabon",1722,1300,18
+"Botswana",999,913,998
+"Lesotho",123,121,122
+"Guinea-Bissau",117,109,118
+"Slovenia","112; 113",112,112
+"Equatorial Guinea","113; 114",112,115
+"Latvia","110; 02 (fixed line)","113;03 (fixed line)","112;01 (fixed line)"
+"North Macedonia",192,194,193
+"Bahrain","999; 112","999; 112","999; 112"
+"Trinidad and Tobago","999; 911",811,990
+"Timor-Leste",112,112,112
+"Estonia",110,112,112
+"Cyprus",112,1400,"112; 199"
+"Mauritius","999; 112",114,"995; 115"
+"Eswatini",999,911,933
+"Djibouti",17,19,18
+"Fiji","911; 000; 917; 919;","911; 000","911; 000"
+"Reunion",112,112,112
+"Comoros","None","None","None"
+"Guyana",911,913,912
+"Solomon Islands",999,911,988
+"Bhutan",113,112,110
+"Macau",999,999,999
+"Luxembourg",113,112,112
+"Montenegro",122,124,123
+"Suriname","111; 115",113,110
+"Western Sahara",150,150,150
+"Malta","191; 112","196; 116; 117; 112","199; 112"
+"Maldives",119,102,118
+"Cape Verde",132,130,131
+"Brunei",993,991,995
+"Belize",911,911,990
+"Bahamas",919,919,919
+"Iceland",112,112,112
+"Guadeloupe",112,112,112
+"Martinique",112,112,112
+"Vanuatu",11,112,113
+"Mayotte",112,112,112
+"French Guiana",112,112,112
+"New Caledonia",112,112,112
+"Barbados","211; 911",511,"311; 911"
+"French Polynesia",112,112,112
+"Sao Tome and Principe",112,112,112
+"Samoa",995,996,994
+"Curacao",911,912,911
+"Saint Lucia",999,911,911
+"Guam",911,911,911
+"Kiribati",192,"194 (Nawerewere Area); 195 (Betio Area)",193
+"Seychelles",133,141,111
+"Grenada",911,"434; 724; 774",911
+"Micronesia",911,911,911
+"Aruba",911,911,911
+"Tonga",922,933,"999; 927; 928"
+"Saint Vincent and the Grenadines","911; 999","None","911; 999"
+"Antigua and Barbuda","999; 911","999; 911","999; 911"
+"United States Virgin Islands",911,911,911
+"Isle of Man","112; 999","112; 999","112; 999"
+"Andorra","110; 112","116; 112","118; 112"
+"Cayman Islands",911,911,911
+"Dominica",999,999,999
+"Bermuda",911,911,911
+"Greenland",112,112,112
+"Faroe Islands",112,112,112
+"Saint Kitts and Nevis",911,911,911
+"American Samoa",911,911,911
+"Liechtenstein","117; 112","144; 112","118; 112"
+"Gibraltar","199; 112; 999","190; 112; 999","190; 112; 999"
+"Monaco",17,"112; 15","112; 18"
+"Marshall Islands",911,911,911
+"San Marino","113; 112",118,115
+"Palau",911,911,911
+"Anguilla",911,911,911
+"Cook Islands",999,998,996
+"Nauru",110,111,112
+"Tuvalu",911,911,911
+"Saint Pierre and Miquelon",112,112,112
+"Montserrat",911,911,911
+"Falkland Islands","112; 999","112; 999","112; 999"
+"Vatican City",113,118,115

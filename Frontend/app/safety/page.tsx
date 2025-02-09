@@ -1,41 +1,65 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Phone, AlertTriangle, X } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { MapPin, Phone, AlertTriangle, X } from "lucide-react";
 
 type EmergencyContact = {
-  id: string
-  name: string
-  number: string
-}
+  id: string;
+  name: string;
+  number: string;
+};
 
 export default function SafetyPage() {
-  const [showAlert, setShowAlert] = useState(false)
-  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([])
-  const [userLocation, setUserLocation] = useState<string>("Unknown")
+  const [showAlert, setShowAlert] = useState(false);
+  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
+  const [userLocation, setUserLocation] = useState<string>("Fetching...");
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
-    // Simulating fetching user's location
-    setTimeout(() => setUserLocation("New York, USA"), 1000)
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          setCoordinates(coords);
+          fetchEmergencyNumbers(coords);
+        },
+        () => setUserLocation("Location access denied.")
+      );
+    } else {
+      setUserLocation("Geolocation not supported.");
+    }
+  }, []);
 
-    // Simulating fetching emergency numbers based on location
-    setTimeout(() => {
+  async function fetchEmergencyNumbers(coords: { latitude: number; longitude: number }) {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/get_emergency_numbers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(coords),
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch emergency numbers");
+      const data = await response.json();
+      setUserLocation(data.country);
       setEmergencyContacts([
-        { id: "1", name: "Police", number: "911" },
-        { id: "2", name: "Ambulance", number: "911" },
-        { id: "3", name: "Fire Department", number: "911" },
-        { id: "4", name: "Poison Control", number: "1-800-222-1222" },
-      ])
-    }, 1500)
-  }, [])
+        { id: "1", name: "🚔 Police", number: data.emergency_numbers.Police },
+        { id: "2", name: "🚑 Ambulance", number: data.emergency_numbers.Ambulance },
+        { id: "3", name: "🔥 Fire", number: data.emergency_numbers.Fire },
+      ]);
+    } catch (error) {
+      setUserLocation("Could not fetch location data.");
+    }
+  }
 
   const handleEmergencyAlert = () => {
-    setShowAlert(true)
-    // In a real app, this would trigger an actual alert to emergency contacts
-    setTimeout(() => setShowAlert(false), 5000) // Hide alert after 5 seconds
-  }
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 5000);
+  };
 
   return (
     <div className="p-4 space-y-4 bg-gray-900 min-h-full">
@@ -43,7 +67,7 @@ export default function SafetyPage() {
       {showAlert && (
         <Card className="bg-red-900 border-red-500">
           <CardContent className="p-4 flex items-center justify-between">
-            <span className="text-red-100">Emergency alert sent to your contacts!</span>
+            <span className="text-red-100">🚨 Emergency alert sent!</span>
             <Button variant="ghost" size="sm" onClick={() => setShowAlert(false)}>
               <X size={20} className="text-red-100" />
             </Button>
@@ -57,7 +81,7 @@ export default function SafetyPage() {
       <Card className="bg-gray-800 text-gray-100">
         <CardContent className="p-4 flex items-center space-x-2">
           <MapPin size={20} className="text-purple-400" />
-          <span>Your current location: {userLocation}</span>
+          <span>📍 {userLocation}</span>
         </CardContent>
       </Card>
       <h2 className="text-xl font-semibold text-purple-400">Local Emergency Numbers</h2>
@@ -68,11 +92,8 @@ export default function SafetyPage() {
           ))}
         </CardContent>
       </Card>
-      <Button variant="outline" className="w-full text-purple-400 border-purple-500 hover:bg-purple-900">
-        View More Resources
-      </Button>
     </div>
-  )
+  );
 }
 
 function EmergencyNumber({ name, number }: { name: string; number: string }) {
@@ -84,6 +105,5 @@ function EmergencyNumber({ name, number }: { name: string; number: string }) {
         {number}
       </Button>
     </div>
-  )
+  );
 }
-

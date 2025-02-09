@@ -1,6 +1,6 @@
+# main.py
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles  # Add this import
 from pydantic import BaseModel
 from typing import List, Optional
 from uuid import uuid4
@@ -17,14 +17,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# In-memory storage
+users = {}
+
 # Directory for uploaded images
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Serve uploaded files
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-
-# Data Models
 class BucketListItem(BaseModel):
     name: str
     lat: float
@@ -41,22 +40,6 @@ class UserProfile(BaseModel):
     trips: int
     countries: int
     bucketList: List[BucketListItem] = []
-
-# In-memory storage
-users = {}
-
-# Initialize a test user AFTER defining the UserProfile class
-users["user123"] = UserProfile(
-    id="user123",
-    name="Test User",
-    bio="This is a test user.",
-    age=25,
-    height="5'8\"",
-    weight="150lbs",
-    trips=5,
-    countries=3,
-    bucketList=[]
-)
 
 # Get user profile
 @app.get("/api/user/{user_id}", response_model=UserProfile)

@@ -48,9 +48,9 @@ export default function SafetyPage() {
       const data = await response.json();
       setUserLocation(data.country);
       setEmergencyContacts([
-        { id: "1", name: "🚔 Police", number: data.emergency_numbers.Police },
-        { id: "2", name: "🚑 Ambulance", number: data.emergency_numbers.Ambulance },
-        { id: "3", name: "🔥 Fire", number: data.emergency_numbers.Fire },
+        { id: "1", name: "Police", number: data.emergency_numbers.Police },
+        { id: "2", name: "Ambulance", number: data.emergency_numbers.Ambulance },
+        { id: "3", name: "Fire Department", number: data.emergency_numbers.Fire },
       ]);
     } catch (error) {
       setUserLocation("Could not fetch location data.");
@@ -90,34 +90,54 @@ export default function SafetyPage() {
   }
 
   return (
-    <div className="p-4 space-y-4 bg-gray-900 min-h-full">
-      <h1 className="text-2xl font-bold text-purple-400">Safety Center</h1>
+    <div className="p-4 space-y-4 min-h-full">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-white">Safety Center</h1>
+      </div>
+
+      {/* Alert Section */}
       {showAlert && (
-        <Card className="bg-red-900 border-red-500">
+        <Card className="bg-red-600 border-red-700">
           <CardContent className="p-4 flex items-center justify-between">
-            <span className="text-red-100">🚨 Emergency alert sent successfully!</span>
+            <span className="text-white">Emergency alert sent to your contacts!</span>
             <Button variant="ghost" size="sm" onClick={() => setShowAlert(false)}>
-              <X size={20} className="text-red-100" />
+              <X size={20} className="text-white" />
             </Button>
           </CardContent>
         </Card>
       )}
-      <Button
-        className="w-full bg-red-600 hover:bg-red-700 text-white"
-        onClick={handleEmergencyAlert}
-        disabled={loadingAlert}
-      >
-        {loadingAlert ? "Sending Alert..." : <><AlertTriangle className="mr-2" size={20} />Send Emergency Alert</>}
-      </Button>
-      <Card className="bg-gray-800 text-gray-100">
-        <CardContent className="p-4 flex items-center space-x-2">
-          <MapPin size={20} className="text-purple-400" />
-          <span>📍 {userLocation}</span>
+
+      {/* Emergency Button */}
+      <div className="grid grid-cols-1 gap-4">
+        <button
+          onClick={handleEmergencyAlert}
+          disabled={loadingAlert}
+          className="bg-red-600 border-red-600 text-white text-lg py-6 flex items-center justify-center space-x-2 w-full rounded-lg shadow-lg hover:bg-red-500 focus:outline-none transition-transform transform hover:scale-105"
+        >
+          {loadingAlert ? (
+            "Sending Alert..."
+          ) : (
+            <>
+              <AlertTriangle size={24} />
+              <span>Send Emergency Alert</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Location Section */}
+      <Card className="bg-[#364684]/60 backdrop-blur-sm border-[#859dc7]">
+        <CardContent className="p-6 flex items-center space-x-3">
+          <MapPin size={24} className="text-[#bfb3d5]" />
+          <span className="text-[#fcfbf9] text-lg">Current location: {userLocation}</span>
         </CardContent>
       </Card>
-      <h2 className="text-xl font-semibold text-purple-400">Local Emergency Numbers</h2>
-      <Card className="bg-gray-800">
-        <CardContent className="p-4 space-y-2">
+
+      {/* Emergency Numbers Section */}
+      <h2 className="text-xl font-semibold text-white mt-6">Local Emergency Numbers</h2>
+      <Card className="bg-[#364684]/40 backdrop-blur-sm border-[#859dc7]">
+        <CardContent className="p-4 space-y-3">
           {emergencyContacts.map((contact) => (
             <EmergencyNumber key={contact.id} name={contact.name} number={contact.number} />
           ))}
@@ -130,8 +150,8 @@ export default function SafetyPage() {
 function EmergencyNumber({ name, number }: { name: string; number: string }) {
   return (
     <div className="flex justify-between items-center">
-      <span className="text-gray-300">{name}</span>
-      <Button variant="ghost" className="text-blue-400">
+      <span className="text-white text-lg">{name}</span>
+      <Button variant="ghost" className="text-white hover:text-[#bfb3d5] text-lg">
         <Phone size={16} className="mr-2" />
         {number}
       </Button>

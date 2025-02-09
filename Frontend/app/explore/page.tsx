@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Search } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search } from "lucide-react";
+import Link from "next/link";
 
 type Destination = {
-  id: string
-  name: string
-  image: string
-}
+  id: string;
+  name: string;
+  image: string;
+};
 
 export default function ExplorePage() {
   const [destinations] = useState<Destination[]>([
-    { id: "1", name: "Paris", image: "/images/paris.png" }, 
+    { id: "1", name: "Paris", image: "/images/paris.png" },
     { id: "2", name: "Tokyo", image: "/images/tokyo.png" },
     { id: "3", name: "New York", image: "/images/nyc.png" },
     { id: "4", name: "Mumbai", image: "/images/mumbai.png" },
@@ -30,42 +30,63 @@ export default function ExplorePage() {
     { id: "14", name: "Tijuana", image: "/images/tijuana.png" },
   ]);
 
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredDestinations = destinations.filter((dest) => dest.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredDestinations = destinations.filter((dest) =>
+    dest.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="p-4 space-y-4 bg-gray-900 h-full overflow-y-auto">
-      <h1 className="text-2xl font-bold text-purple-400 mb-4">Explore</h1>
-      <div className="relative">
-        <Input
-          type="text"
-          placeholder="Search cities and places"
-          className="pl-10 bg-gray-800 text-gray-100 border-purple-500 focus:border-blue-400"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" size={20} />
-      </div>
-      <h2 className="text-xl font-semibold text-purple-400 mt-6">Popular Destinations</h2>
-      <div className="grid grid-cols-2 gap-4">
-        {filteredDestinations.map((destination) => (
-          <Link key={destination.id} href={`/city/${encodeURIComponent(destination.name)}`}>
-            <Card className="bg-gray-800 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-0">
-                <img
-                  src={destination.image || "/placeholder.svg"}
-                  alt={destination.name}
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="font-semibold text-purple-400">{destination.name}</h3>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+    <div
+      className="max-w-md mx-auto h-[844px]"
+      style={{
+        backgroundImage: "url('/images/BG5.png')", // Update path to your background image
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="p-4 space-y-4 h-full overflow-y-auto text-center mb-6">
+        <h1 className="text-2xl font-bold text-[#FCFBF9] mb-4">Explore</h1>
+        <div className="relative">
+          <Input
+            type="text"
+            placeholder="Search cities and places"
+            className="pl-10 bg-gray-800 text-gray-100 border-blue-500 focus:border-blue-200"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
+            size={20}
+          />
+        </div>
+        <h2 className="text-xl font-semibold text-[#FCFBF9] mt-6">
+          Popular Destinations
+        </h2>
+        <div className="grid grid-cols-2 gap-4">
+          {filteredDestinations.map((destination) => (
+            <Link
+              key={destination.id}
+              href={`/city/${encodeURIComponent(destination.name)}`}
+            >
+              <Card className="bg-blue-1000 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-0">
+                  <img
+                    src={destination.image || "/placeholder.svg"}
+                    alt={destination.name}
+                    className="w-full h-24 object-cover"
+                  />
+                  <div className="p-2">
+                    <h3 className="font-semibold text-purple-200">
+                      {destination.name}
+                    </h3>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
-  )
+  );
 }
